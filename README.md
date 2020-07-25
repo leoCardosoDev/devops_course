@@ -2,9 +2,10 @@
   ## Roda e executa uma imagem
     docker run hello-world
   ## Ver container rodando
-  ## container criados e rodadndo
+    docker ps
+  ## Container criados e rodadndo
     docker system prune --volumes
-  ## container criados mas sem rodar
+  ## Container criados mas sem rodar
     docker ps -a
   ## Apagando um container
     docker rm CONTAINER_ID
@@ -17,13 +18,13 @@
 # Gerenciamento básico de container
   ## Instalando o nginx lastet
     docker run nginx
-  ## rodando processo em background
+  ## Rodando processo em background
     docker run -d nginx
   ## Parando um container
     docker stop CONTAINER_ID
   ## Iniciando um container
     docker start CONTAINER_ID
-  ## removendo um container rodando 
+  ## Removendo um container rodando 
     docker rm CONTAINER_ID -f
 
 # Expondo Portas e Nomeando Containers
@@ -42,5 +43,6 @@
 
 
 # Executando comandos no container
-  # 
+  # Exibindo o conatainer
+    docker exec my_nginx uname -a
   

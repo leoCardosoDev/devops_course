@@ -11,7 +11,8 @@
     docker images
   ### Apagando images 
     docker rmi IMAGE_ID
-
+  ### Apagando todos os container
+    docker rm $(docker ps -a -q) -f
 
 # Gerenciamento básico de container
   ### Instalando o nginx lastet
@@ -38,7 +39,6 @@
   ### Conectando a porta 80 do meu_pc com a port 80 do container
     docker run -d --name expond_port_80 -p 80:80 nginx:alpine
       # => Acesse http://localhost/
-
 
 # Executando comandos no container
   ### Exibindo o container
@@ -67,4 +67,19 @@
     docker volume prune
 
 # Iniciando Networks
+  ### Listando Network
+    docker network ls
+  ## Crie 2 containers e tenta dar um ping
+  ### Inspecionando o network - mostra os containers da rede
+    docker network inspect bridge
+  ### Criando uma network
+    docker network create -d bridge my_network
+  ## Fazendo o ping entre serviços com o nome
+  ### Criando container linkando com a network
+    docker run -d --name rede1 --net=my_network nginx
+    docker run -d --name rede2 --net=my_network nginx
+
+# Docker Commit
+  ### 
+    docker commit CONTAINER_ID NOME_DA_IMAGE(leocardosodev/nginx-image)
 

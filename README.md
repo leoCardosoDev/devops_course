@@ -46,4 +46,23 @@
   # Executando o bash
     docker exec my_nginx bash
   # Interagindo com o bash
-    docker exex -it my_nginx bash
+    docker exec -it my_nginx bash
+
+# Iniciando com volumes
+  # Básico - Criando um volumes
+    docker run -d --name my_nginx -p 8080:80 -v $(pwd):/usr/share/nginx/html nginx
+  # Listando volume
+    docker volume ls
+  # Criando um volume
+    docker volume create vol_test
+  # Descobrindo comandos
+    docker volume --help
+  # Inspecionando volume
+    docker volume inspect vol_test
+  # Criando volume apontando o diretório
+    docker volume create --driver local --opt type=none --opt device=$(pwd) --opt o=bind volume_name
+  # Usando o volume criado em um novo container
+    docker run -d --name nginx2 -p 8081:80 -v volume_name:/usr/share/nginx/html nginx
+  # Matando volume desatachado
+    docker volume prune
+

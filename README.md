@@ -80,6 +80,28 @@
     docker run -d --name rede2 --net=my_network nginx
 
 # Docker Commit
-  ### 
     docker commit CONTAINER_ID NOME_DA_IMAGE(leocardosodev/nginx-image)
+  ## Docker push
+  ### Primeiro docker commit, depois docker login
+    docker push NOME_DA_IMAGE(exemplo: leocardosodev/nginx-image)
 
+# Trabalhando com Dockerfile
+  ## Criando Dockerfile
+    FROM php:7.3.6-fpm-alpine3.9
+    RUN apk add --no-cache shadow
+    WORKDIR /var/www
+    RUN rm -rf /var/www/html 
+    COPY . /var/www
+    RUN ln -s public html
+    RUN usermod -u 1000 www-data
+    USER www-data
+    EXPOSE 9000
+    ENTRYPOINT ["php-fpm"]
+### Fazendo o build usando o Dockerfile
+    docker build -t NOME_CONTAINER . (local do Dockefile)
+### Criando um container baseado na image criada no Dockerfile
+  docker run -d --name swoole -p 9501:9501 test_swoole
+### Tag para push no Docker Hub
+  docker build -t leocardosodev/php-swoole:latest .
+### subindo a imagem para o DockerHub
+  docker push leocardosodev/php-swoole:latest

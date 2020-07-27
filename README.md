@@ -3,8 +3,6 @@
     docker run hello-world
   ## Ver container rodando
     docker ps
-  ## Container criados e rodadndo
-    docker system prune --volumes
   ## Container criados mas sem rodar
     docker ps -a
   ## Apagando um container
@@ -43,6 +41,9 @@
 
 
 # Executando comandos no container
-  # Exibindo o conatainer
+  # Exibindo o container
     docker exec my_nginx uname -a
-  
+  # Executando o bash
+    docker exec my_nginx bash
+  # Interagindo com o bash
+    docker exex -it my_nginx bash

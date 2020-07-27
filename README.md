@@ -100,8 +100,8 @@
 ### Fazendo o build usando o Dockerfile
     docker build -t NOME_CONTAINER . (local do Dockefile)
 ### Criando um container baseado na image criada no Dockerfile
-  docker run -d --name swoole -p 9501:9501 test_swoole
+    docker run -d --name swoole -p 9501:9501 test_swoole
 ### Tag para push no Docker Hub
-  docker build -t leocardosodev/php-swoole:latest .
+    docker build -t leocardosodev/php-swoole:latest .
 ### subindo a imagem para o DockerHub
-  docker push leocardosodev/php-swoole:latest
+    docker push leocardosodev/php-swoole:latest

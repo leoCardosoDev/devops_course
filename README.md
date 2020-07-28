@@ -105,3 +105,22 @@
     docker build -t leocardosodev/php-swoole:latest .
 ### subindo a imagem para o DockerHub
     docker push leocardosodev/php-swoole:latest
+
+# Dockerfile criando image laravel
+  ## Criando Dockerfile com laravel
+    FROM php:7.3.6-fpm-alpine3.9
+    WORKDIR /var/www
+    RUN rm -rf /var/www/html
+    COPY . /var/www 
+    RUN ln -s public html
+    EXPOSE 9000
+    ENTRYPOINT ["php-fpm"]
+  ### Criando container espelhado com volumes
+    docker run -d --name laravel -v $(pwd):/var/www -p 9000:9000 leocardosodev/laravel
+  ### Instalando bash (alpine ñ tem bash - )
+    docker exec -it laravel apk add bash
+  ### Acessando o container recém criado
+    docker exec -it laravel bash
+    cd /var/www php artisan serve --host=0.0.0.0
+  ### Subindo a imagem com laravel para o DockerHub
+    docker push leocardosodev/laravel

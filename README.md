@@ -115,12 +115,16 @@
     RUN ln -s public html
     EXPOSE 9000
     ENTRYPOINT ["php-fpm"]
+  ### Depois de criar o Dockerfile gerar ou atualizar(build) a imagem
+    docker build -t leocardosodev/laravel .
   ### Criando container espelhado com volumes
     docker run -d --name laravel -v $(pwd):/var/www -p 9000:9000 leocardosodev/laravel
+  ### Ñ precisa mais do -v pois já foi copiado dentro do Dockfile
+    docker run -d --name laravel -p 8000:8000 leocardosodev/laravel
   ### Instalando bash (alpine ñ tem bash - )
-    docker exec -it laravel apk add bash
+    docker exec -u root -it laravel apk add bash
   ### Acessando o container recém criado
-    docker exec -it laravel bash
+    docker exec -u root -it laravel bash
     cd /var/www php artisan serve --host=0.0.0.0
   ### Subindo a imagem com laravel para o DockerHub
     docker push leocardosodev/laravel

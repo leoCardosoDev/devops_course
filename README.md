@@ -128,3 +128,72 @@
     cd /var/www php artisan serve --host=0.0.0.0
   ### Subindo a imagem com laravel para o DockerHub
     docker push leocardosodev/laravel
+
+# Iniciando com docker-compose
+  ## Criando um projeto Laravel
+    composer create-project --prefer-dist laravel/laravel laravel "5.8.*"
+    cd laravel
+  ### => Cria a pasta .docker/ para fazer o Dockerfile de cada serviço
+  #### .docker/nginx Dockerfile
+    FROM nginx:1.15.0-alpine
+    RUN rm /etc/nginx/conf.d/default.conf
+    COPY ./nginx.conf /etc/nginx/conf.d
+  #### Dockerfile na raiz
+    FROM php:7.3.6-fpm-alpine3.9
+    RUN apk add --no-cache shadow \ 
+        && apk add bash mysql-client \ 
+        && docker-php-ext-install pdo pdo_mysql
+    WORKDIR /var/www
+    RUN rm -rf /var/www/html 
+    RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+    # RUN composer install && \
+    #   cp .env.exemple .env && \ 
+    #   php artisan key:generate && \ 
+    #   php artisan config:cache
+    # COPY . /var/www
+    RUN ln -s public html
+    RUN usermod -u 1000 www-data
+    USER www-data
+    EXPOSE 9000
+ENTRYPOINT ["php-fpm"]
+  #### docker-compose - criando os serviços
+    version: '3'
+
+    services:
+      app:
+        build: .
+        container_name: app
+        volumes: 
+          - .:/var/www
+        networks: 
+          - app-network
+      
+      nginx:
+        build: .docker/nginx
+        container_name: nginx
+        restart: always
+        tty: true
+        ports:
+          - "8000:80"
+        volumes:
+          - .:/var/www
+        networks: 
+          - app-network
+
+      redis:
+        image: redis:alpine
+        expose:
+          - 6379
+        networks: 
+          - app-network
+
+    networks: 
+      app-network:
+        driver: bridge
+
+  #### Executando o docker-compose
+    docker-compose up -d
+  #### Derrubando os serviços do docker-compose
+    docker-compose down
+  #### Rebuild o docker-compose
+    docker-compose up -d --build

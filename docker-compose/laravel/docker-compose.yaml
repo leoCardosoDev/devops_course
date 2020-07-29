@@ -1,6 +1,24 @@
 version: '3'
 
 services:
+
+  db:
+    build: .docker/mysql
+    command: --innodb-use-native-aio=0
+    container_name: db
+    restart: always
+    tty: true
+    ports: 
+      - "3306:3306"
+    volumes:
+      - ./.docker/mysql/dbdata:/var/lib/mysql
+    environment: 
+      - MYSQL_DATABASE=laravel
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_USER=root
+    networks: 
+      - app-network
+
   app:
     build: .
     container_name: app
@@ -8,6 +26,9 @@ services:
       - .:/var/www
     networks: 
       - app-network
+    depends_on: 
+      - db
+      - redis
   
   nginx:
     build: .docker/nginx
@@ -20,6 +41,8 @@ services:
       - .:/var/www
     networks: 
       - app-network
+    depends_on: 
+      - app 
 
   redis:
     image: redis:alpine

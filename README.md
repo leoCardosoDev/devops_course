@@ -138,6 +138,9 @@
     FROM nginx:1.15.0-alpine
     RUN rm /etc/nginx/conf.d/default.conf
     COPY ./nginx.conf /etc/nginx/conf.d
+  ### .docker/mysql Dockerfile
+    FROM mysql:5.7
+    RUN usermod -u 1000 mysql
   #### Dockerfile na raiz
     FROM php:7.3.6-fpm-alpine3.9
     RUN apk add --no-cache shadow \ 
@@ -155,7 +158,7 @@
     RUN usermod -u 1000 www-data
     USER www-data
     EXPOSE 9000
-ENTRYPOINT ["php-fpm"]
+    ENTRYPOINT ["php-fpm"]
   #### docker-compose - criando os serviços
     version: '3'
 
@@ -180,6 +183,23 @@ ENTRYPOINT ["php-fpm"]
         networks: 
           - app-network
 
+      db:
+        build: .docker/mysql
+        command: --innodb-use-native-aio=0
+        container_name: db
+        restart: always
+        tty: true
+        ports: 
+          - "3306:3306"
+        volumes:
+          - ./.docker/mysql/dbdata:/var/lib/mysql
+        environment: 
+          - MYSQL_DATABASE=laravel
+          - MYSQL_ROOT_PASSWORD=root
+          - MYSQL_USER=root
+        networks: 
+          - app-network
+
       redis:
         image: redis:alpine
         expose:
@@ -191,9 +211,35 @@ ENTRYPOINT ["php-fpm"]
       app-network:
         driver: bridge
 
+
   #### Executando o docker-compose
     docker-compose up -d
   #### Derrubando os serviços do docker-compose
     docker-compose down
   #### Rebuild o docker-compose
     docker-compose up -d --build
+
+# Trabalhando como Dockerize
+      https://github.com/jwilder/dockerize
+  ##### Adicionando no Dockerfile
+    FROM php:7.3.6-fpm-alpine3.9
+    RUN apk add --no-cache shadow openssl \ 
+        && apk add bash mysql-client \ 
+        && docker-php-ext-install pdo pdo_mysql
+    ENV DOCKERIZE_VERSION v0.6.1
+    RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
+        && tar -C /usr/local/bin -xzvf dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
+        && rm dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+    WORKDIR /var/www
+    RUN rm -rf /var/www/html 
+    RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+    RUN ln -s public html
+    RUN usermod -u 1000 www-data
+    USER www-data
+    EXPOSE 9000
+    ENTRYPOINT ["php-fpm"]
+  ###### Rebuild container
+      docker-compose up -d --build
+  ###### Entrando no container para executar p dockerize
+      docker exec -u root -it app bash
+      dockerize -wait tcp://db:3306 -timeout 20s

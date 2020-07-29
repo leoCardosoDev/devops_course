@@ -14,12 +14,13 @@ RUN rm -rf /var/www/html
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# RUN composer install && \
+#COPY . /var/www
+# RUN composer install 
+# && \
 #   cp .env.exemple .env && \ 
 #   php artisan key:generate && \ 
 #   php artisan config:cache
 
-#COPY . /var/www
 RUN ln -s public html
 
 RUN usermod -u 1000 www-data

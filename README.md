@@ -243,3 +243,6 @@
   ###### Entrando no container para executar p dockerize
       docker exec -u root -it app bash
       dockerize -wait tcp://db:3306 -timeout 20s
+  ###### Comando docker para exibir logs de um serviço
+      docker logs app
+  ### Criando o entrypoint.sh
